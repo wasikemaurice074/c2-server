@@ -51,7 +51,7 @@
             fetch('/api/devices')
                 .then(res => res.json())
                 .then(data => {
-                    let html = '<table><tr><th>Device ID</th><th>Model</th><th>Last Seen</th><th>Status</th></tr>';
+                    let html = '<tr></td><th>Device ID</th><th>Model</th><th>Last Seen</th><th>Status</th></tr>';
                     data.devices.forEach(d => {
                         let statusClass = d.status === 'online' ? 'online' : 'offline';
                         html += `<tr>
@@ -68,7 +68,7 @@
             fetch('/api/logs/all')
                 .then(res => res.json())
                 .then(data => {
-                    let html = '<table><tr><th>Device</th><th>Type</th><th>Data</th><th>Time</th></tr>';
+                    let html = '<table> <tr><th>Device</th><th>Type</th><th>Data</th><th>Time</th></tr>';
                     if (data.logs) {
                         data.logs.forEach(l => {
                             html += `<tr>
