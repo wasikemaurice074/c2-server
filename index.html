@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>C2 Dashboard - Battery Optimizer</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .online { color: #00ff00; }
+        .offline { color: #ff4444; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #222;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔋 Battery Optimizer C2 Dashboard</h1>
+    
+    <div class="card">
+        <h2>Connected Devices</h2>
+        <div id="devices">Loading...</div>
+    </div>
+    
+    <div class="card">
+        <h2>Live Logs</h2>
+        <div id="logs">Loading...</div>
+    </div>
+    
+    <script>
+        function refresh() {
+            fetch('/api/devices')
+                .then(res => res.json())
+                .then(data => {
+                    let html = '<table><tr><th>Device ID</th><th>Model</th><th>Last Seen</th><th>Status</th></tr>';
+                    data.devices.forEach(d => {
+                        let statusClass = d.status === 'online' ? 'online' : 'offline';
+                        html += `<tr>
+                            <td>${d.id}</td>
+                            <td>${d.device_model}</td>
+                            <td>${new Date(d.last_seen).toLocaleString()}</td>
+                            <td class="${statusClass}">${d.status}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('devices').innerHTML = html;
+                });
+            
+            fetch('/api/logs/all')
+                .then(res => res.json())
+                .then(data => {
+                    let html = '<table><tr><th>Device</th><th>Type</th><th>Data</th><th>Time</th></tr>';
+                    if (data.logs) {
+                        data.logs.forEach(l => {
+                            html += `<tr>
+                                <td>${l.device_id}</td>
+                                <td>${l.type}</td>
+                                <td>${l.data}</td>
+                                <td>${new Date(l.timestamp).toLocaleString()}</td>
+                            </tr>`;
+                        });
+                    }
+                    html += '</table>';
+                    document.getElementById('logs').innerHTML = html;
+                });
+        }
+        
+        refresh();
+        setInterval(refresh, 5000);
+    </script>
+</body>
+</html>
